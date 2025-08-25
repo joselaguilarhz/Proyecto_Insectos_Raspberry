@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Iniciar sesión{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background-image: #f0f4f4;
+        font-family: 'Inter', sans-serif;
+    }
+  .login-card {
+    max-width: 360px;
+    margin: 80px auto;
+    padding: 2rem;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  }
+  .login-logo {
+    display: block;
+    margin: 0 auto 1.5rem;
+    max-height: 60px;
+  }
+  .login-card hr {
+    border: 0;
+    border-top: 1px solid #ddd;
+    margin: 1.5rem 0;
+  }
+  .form-control {
+    width: 100%;
+    padding: 2 1 0.75rem;
+    height: 45px;
+    background-color: #f5fbfb;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    box-shadow: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .form-control:focus {
+    outline: none;
+    border-color: #2c8d8d;
+    box-shadow: 0 0 0 0.2rem rgba(44, 141, 141, 0.25);
+  }
+  .btn-teal {
+    background-color: #2c8d8d;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    width: 100%;
+    height: 45px;
+    font-size: 1rem;
+    margin-top: 1rem;
+  }
+  .btn-teal:hover {
+    background-color: #246b6b;
+  }
+  .forgot-link {
+    display: block;
+    text-align: right;
+    margin-top: 0.75rem;
+    font-size: 0.9rem;
+    color: #2c8d8d;
+    text-decoration: none;
+  }
+  .forgot-link:hover {
+    text-decoration: underline;
+  }
+</style>
+
+<div class="login-card">
+  <!-- Logo -->
+  <img src="static/img/logo-png.png" alt="Smart Fenix" class="login-logo">
+
+  <!-- Divider -->
+  <hr>
+
+  <!-- Flash messages -->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="alert alert-warning" role="alert">
+        {{ messages[0] }}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Login Form -->
+  <form method="POST" action="{{ url_for('login') }}">
+    <div class="mb-3">
+      <label for="username" class="form-label">Correo electrónico</label>
+      <input type="text" class="form-control" id="username" name="username" placeholder="Escribe aquí tu correo electrónico" required>
+    </div>
+    <p></p>
+    <div class="mb-3">
+      <label for="password" class="form-label">Contraseña</label>
+      <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required>
+    </div>
+    <button type="submit" class="btn-teal">Iniciar sesión</button>
+    <a href="#" class="forgot-link">Restablecer contraseña</a>
+  </form>
+</div>
+{% endblock %}

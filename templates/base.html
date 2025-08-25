@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Smart Fenix{% endblock %}</title>
+  <!-- Aquí puedes enlazar tu CSS global -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body style=" background: url('../static/img/olivar.jpg'); font-family: Arial, sans-serif;">
+  {% block content %}{% endblock %}
+</body>
+</html>

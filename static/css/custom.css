@@ -1,0 +1,159 @@
+/* ==== Variables de marca y Bootstrap overrides ==== */
+:root {
+  --sf-blue:    #6AC2BD;
+  --sf-green:   #063f81;
+  --sf-light:   #f0f0f0;
+  --sf-dark:    #2E3A46;
+  --sf-orange:  #FF8C42;
+
+  --bs-body-bg:    var(--sf-light);
+  --bs-body-color: var(--sf-dark);
+  --bs-primary:    var(--sf-blue);
+  --bs-secondary:  var(--sf-green);
+  --bs-light:      var(--sf-light);
+  --bs-dark:       var(--sf-dark);
+}
+
+/* ==== Base ==== */
+body {
+  font-family: 'Inter', sans-serif;
+  color: var(--sf-dark);
+  background-color: var(--bs-body-bg);
+  line-height: 1.6;
+}
+
+/* ==== Hero Section ==== */
+.hero-section {
+  position: relative;
+  background: url('../img/olivar.jpg') center/cover no-repeat;
+  /* si prefieres usar la ruta url_for, ponlo inline en el estilo */
+  height: 60vh;       /* ajusta la altura a tu gusto */
+  min-height: 400px;  /* alto mínimo para pantallas pequeñas */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.45);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+}
+/* ==== Glassmorphism navbar ==== */
+.navbar {
+  background-color: rgba(255, 255, 255, 0.25) !important;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: background-color .3s;
+}
+.navbar .navbar-brand,
+.navbar .nav-link {
+  color: #6AC2BD !important;
+  transition: color .2s;
+}
+.navbar .nav-link:hover {
+  color: var(--sf-orange) !important;
+}
+
+/* ==== Cards ==== */
+.card {
+  border: none;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  overflow: hidden;
+  transition: transform .2s;
+}
+.card:hover {
+  transform: translateY(-4px);
+}
+.card-header {
+  background-color: var(--sf-blue);
+  color: #ffffff00;
+  font-weight: 600;
+  font-style: italic;
+  padding: 1rem 1.25rem;
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+}
+.card-body {
+  background-color: #fff;
+  padding: 1.25rem;
+}
+.bg-custom-title {
+  background-color: #0B1725 !important;
+  color: #ffffff !important;
+}
+
+/* ==== Fondo para la card de recomendación ==== */
+.bg-recomendacion {
+  background-color: var(--sf-light) !important; /* gris claro: #f0f0f0 */
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+/* ==== Botones primarios ==== */
+.btn-primary {
+  background-color: var(--bs-secondary) !important;
+  border-color:     var(--bs-secondary) !important;
+  border-radius: .5rem;
+  padding: .6rem 1.2rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transition: background-color .2s, transform .1s;
+}
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--sf-orange) !important;
+  border-color:     var(--sf-orange) !important;
+  transform: translateY(-2px);
+}
+
+/* ==== Tablas ==== */
+.table {
+  border-collapse: separate;
+  border-spacing: 0 0.75rem;
+}
+.table thead th {
+  background-color: var(--sf-blue);
+  color: #ffffff;
+  font-weight: 600;
+  border: none;
+}
+
+/* Texto negro en encabezados de tablas con thead.table-light */
+.table-light th {
+  color: #000 !important;
+}
+
+.table tbody tr {
+  background-color: #fff;
+  border-radius: .5rem;
+  transition: transform .1s;
+}
+.table tbody tr:hover {
+  transform: translateY(-2px);
+}
+.table td, .table th {
+  vertical-align: middle;
+  border: none;
+}
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0,0,0,0.03);
+}
+.table-light th {
+  background-color: var(--bs-light) !important;
+}
+
+/* ==== Footer ==== */
+footer {
+  background-color: var(--sf-dark);
+  color: #fff;
+  padding: 1rem 0;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+  font-size: .9rem;
+}

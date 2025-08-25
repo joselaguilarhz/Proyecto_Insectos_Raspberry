@@ -1,0 +1,103 @@
+{% extends "layout.html" %}
+{% block content %}
+
+  <section class="hero-section mb-5">
+    <div class="hero-overlay"></div>
+    <div class="container hero-content text-center text-white">
+      <h1 class="display-4 fw-bold">Smart Agro</h1>
+      <p class="lead">Previene tu finca de plagas 24h con Smart Fenix</p>
+    </div>
+  </section>
+
+  <h1 class="mb-4">Insectos detectados por nuestra trampa inteligente</h1>
+
+  <form class="row g-3 mb-4" method="get">
+    <div class="col-auto">
+      <select class="form-select" name="clase">
+        <option value="">-- Todas --</option>
+        {% for c in clases %}
+          <option value="{{ c }}" {% if c == clase_activa %}selected{% endif %}>{{ c }}</option>
+        {% endfor %}
+        <option value="sin" {% if clase_activa == 'sin' %}selected{% endif %}>Sin detección</option>
+      </select>
+    </div>
+    <div class="col-auto">
+      <button class="btn btn-primary" type="submit">Filtrar</button>
+    </div>
+  </form>
+
+  <div class="row">
+    <!-- Card: Frecuencia -->
+    <div class="col-lg-5 mb-4">
+      <div class="card">
+       <div class="card-header bg-custom-title">
+  📊 Frecuencia de detecciones
+</div>
+
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Clase</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for clase, total in conteo %}
+                <tr>
+                  <td>{{ clase or 'Sin detección' }}</td>
+                  <td>{{ total }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card: Detalles de Imágenes -->
+    <div class="col-lg-7">
+      <div class="card">
+        <div class="card-header bg-custom-title">
+         📷 Detalles de Imágenes
+        </div>
+
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Imagen</th>
+                  <th>Fecha</th>
+                  <th>Insecto</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for d in datos %}
+                  <tr>
+                    <!-- Miniatura -->
+                    <td>
+                      {% if d.ruta_imagen %}
+                        {% set fichero = d.ruta_imagen.split('/fotos_cam/')[-1] %}
+                        <a href="{{ url_for('imagenes', filename=fichero) }}" target="_blank">
+                          <img src="{{ url_for('imagenes', filename=fichero) }}"
+                               class="img-thumbnail" width="80">
+                        </a>
+                      {% else %}
+                        –
+                      {% endif %}
+                    </td>
+                    <!-- Fecha -->
+                    <td>{{ d.fecha.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <!-- Insecto -->
+                    <td>{{ d.insecto_detectado or 'Sin detección' }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">Galeria de Imagenes</h2>
+  <div class="row g-4">
+    {% for img in imagenes %}
+      <div class="col-md-6 col-lg-4">
+        <div class="card shadow-sm">
+          <a href="{{ url_for('imagenes', filename=img.ruta_imagen) }}" target="_blank">
+            <img src="{{ url_for('imagenes', filename=img.ruta_imagen) }}"
+                 class="card-img-top img-fluid rounded"
+                 alt="Imagen {{ loop.index }}">
+          </a>
+          <div class="card-body">
+            <p class="card-text">
+              <strong>{{ img.insecto_detectado or "Sin deteccion" }}</strong><br>
+              <small class="text-muted">{{ img.fecha.strftime("%d/%m/%Y %H:%M") }}</small>
+            </p>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
