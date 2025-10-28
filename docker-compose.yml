@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smart-fenix-app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      SECRET_KEY: ${SECRET_KEY:-smartfenix-key}
+      DB_PATH: /data/app.db
+      CAPTURE_DIR: /data/uploads
+      DETECTADAS_DIR: /data/uploads_detectadas
+      NODETECCION_DIR: /data/uploads_nodeteccion
+      DEFAULT_USERNAME: ${DEFAULT_USERNAME:-admin}
+      DEFAULT_PASSWORD: ${DEFAULT_PASSWORD:-123}
+      CAMERA_NAME: ${CAMERA_NAME:-camara-finca}
+      ROBOFLOW_API_KEY: ${ROBOFLOW_API_KEY:-}
+      ROBOFLOW_WORKSPACE: ${ROBOFLOW_WORKSPACE:-}
+      ROBOFLOW_WORKFLOW: ${ROBOFLOW_WORKFLOW:-}
+    volumes:
+      - ./data:/data

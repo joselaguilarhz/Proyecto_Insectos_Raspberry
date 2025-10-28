@@ -1,28 +1,19 @@
 {% extends "layout.html" %}
 {% block content %}
-
- <section class="hero-section mb-5">
-    <div class="hero-overlay"></div>
-    <div class="container hero-content text-center text-white">
-      <h1 class="display-4 fw-bold">Smart Agro</h1>
-      <p class="lead">Previene tu finca de plagas 24h con Smart Fénix</p>
-    </div>
-  </section>
-  
-  <h1 class="mb-4">🤖 Recomendación Inteligente</h1>
+  <h2 class="mb-4">Recomendacion inteligente</h2>
 
   {% if mensaje %}
     <div class="alert alert-warning">{{ mensaje }}</div>
   {% else %}
-      <div class="card shadow-sm bg-recomendacion">
+    <div class="card shadow-sm bg-light">
       <div class="card-body">
-        <h5 class="card-title">Insecto más frecuente:</h5>
-        <p class="card-text">
-          <strong>{{ recomendacion.insecto or 'Sin detección' }}</strong>
-          ({{ recomendacion.total }} apariciones)
+        <h5 class="card-title">Insecto con mayor recurrencia</h5>
+        <p class="card-text mb-3">
+          <strong>{{ recomendacion.insecto }}</strong>
+          ({{ recomendacion.total }} detecciones)
         </p>
-        <h6>Tratamiento recomendado:</h6>
-        <p class="fs-5 text-primary">{{ recomendacion.texto }}</p>
+        <h6 class="fw-semibold">Accion sugerida</h6>
+        <p class="mb-0">{{ recomendacion.texto }}</p>
       </div>
     </div>
   {% endif %}
