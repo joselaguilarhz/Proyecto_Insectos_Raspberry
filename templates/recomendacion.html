@@ -1,19 +1,65 @@
 {% extends "layout.html" %}
 {% block content %}
-  <h2 class="mb-4">Recomendacion inteligente</h2>
+  <h2 class="mb-4">
+    <i class="bi bi-lightbulb-fill text-warning"></i>
+    Recomendación Inteligente
+  </h2>
 
   {% if mensaje %}
-    <div class="alert alert-warning">{{ mensaje }}</div>
+    <div class="alert alert-warning">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      {{ mensaje }}
+    </div>
   {% else %}
-    <div class="card shadow-sm bg-light">
-      <div class="card-body">
-        <h5 class="card-title">Insecto con mayor recurrencia</h5>
-        <p class="card-text mb-3">
-          <strong>{{ recomendacion.insecto }}</strong>
-          ({{ recomendacion.total }} detecciones)
-        </p>
-        <h6 class="fw-semibold">Accion sugerida</h6>
-        <p class="mb-0">{{ recomendacion.texto }}</p>
+    <div class="card shadow-sm bg-recomendacion">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-center mb-4">
+          <div class="stat-icon bg-primary bg-opacity-25 rounded-circle p-3 me-3">
+            <i class="bi bi-bug-fill fs-2 text-primary"></i>
+          </div>
+          <div>
+            <h5 class="card-title mb-1">Insecto con mayor recurrencia</h5>
+            <p class="card-text mb-0">
+              <strong class="fs-4 text-primary">{{ recomendacion.insecto }}</strong>
+              <span class="badge bg-primary ms-2">{{ recomendacion.total }} detecciones</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="p-3 bg-white rounded shadow-sm">
+              <h6 class="fw-semibold mb-2">
+                <i class="bi bi-info-circle-fill text-info me-2"></i>
+                Descripción del insecto
+              </h6>
+              <p class="mb-0 text-muted">{{ recomendacion.descripcion }}</p>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="p-3 bg-white rounded shadow-sm">
+              <h6 class="fw-semibold mb-2">
+                <i class="bi bi-shield-check text-success me-2"></i>
+                Acción sugerida
+              </h6>
+              <p class="mb-0 text-muted">{{ recomendacion.accion }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 p-3 bg-warning bg-opacity-10 rounded border border-warning">
+          <div class="d-flex align-items-start">
+            <i class="bi bi-exclamation-triangle-fill text-warning fs-4 me-3 mt-1"></i>
+            <div>
+              <h6 class="fw-semibold mb-2">Importante</h6>
+              <p class="mb-0 small">
+                Esta recomendación se basa en análisis de datos históricos. 
+                Consulte siempre con un agrónomo certificado antes de aplicar tratamientos.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   {% endif %}

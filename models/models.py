@@ -12,11 +12,15 @@ class Usuario(UserMixin, db.Model):
 
 
 class Deteccion(db.Model):
+    __tablename__ = 'deteccion'
+    
     id = db.Column(db.Integer, primary_key=True)
     camera_name = db.Column(db.String(100))
-    filename = db.Column(db.String(200))
+    filename = db.Column(db.String(255))
+    processed_filename = db.Column(db.String(255), nullable=True)  
     insect = db.Column(db.String(100))
     confidence = db.Column(db.Float)
     temperature = db.Column(db.Float)
     humidity = db.Column(db.Float)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    enviado_telegram = db.Column(db.Boolean, default=False)

@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Smart Fenix - Monitorizacion de Insectos</title>
+  <title>Smart Fenix - Monitorización de Insectos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -10,15 +10,24 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo_fenix.png') }}">
+
 
   <style>
     body { font-family: 'Inter', sans-serif; }
   </style>
+  <script>
+  // Si la URL actual es la raíz, redirige automáticamente a /detecciones
+  if (window.location.pathname === '/' || window.location.pathname === '') {
+    window.location.replace('/detecciones');
+  }
+</script>
+
 </head>
 <body class="d-flex flex-column min-vh-100 bg-body">
   <header class="navbar navbar-expand-lg fixed-top bg-white bg-opacity-75 shadow-sm backdrop-blur">
     <div class="container">
-      <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main_bp.index') }}">
+      <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main_bp.detecciones') }}">
         <img src="{{ url_for('static', filename='img/logo-png.png') }}" alt="Smart Fenix" height="48" class="me-2">
         <span class="fw-bold text-primary"></span>
       </a>
@@ -29,12 +38,37 @@
       <div class="collapse navbar-collapse" id="navMenu">
         <ul class="navbar-nav ms-auto">
           {% if current_user.is_authenticated %}
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('main_bp.index') }}">Detecciones</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('main_bp.recomendacion') }}">Recomendacion</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('main_bp.galeria') }}">Galeria</a></li>
-            <li class="nav-item"><a class="nav-link text-danger" href="{{ url_for('main_bp.logout') }}">Cerrar sesion</a></li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('main_bp.detecciones') }}">
+                <i class="bi bi-house-fill me-1"></i>
+                Inicio
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('main_bp.recomendacion') }}">
+                <i class="bi bi-lightbulb-fill me-1"></i>
+                Recomendación
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('main_bp.galeria') }}">
+                <i class="bi bi-images me-1"></i>
+                Galería
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-danger" href="{{ url_for('main_bp.logout') }}">
+                <i class="bi bi-box-arrow-right me-1"></i>
+                Cerrar sesión
+              </a>
+            </li>
           {% else %}
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('main_bp.login') }}">Iniciar sesion</a></li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('main_bp.login') }}">
+                <i class="bi bi-box-arrow-in-right me-1"></i>
+                Iniciar sesión
+              </a>
+            </li>
           {% endif %}
         </ul>
       </div>
@@ -63,5 +97,111 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+  <!-- ...existing code... -->
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
+      let activeCards = [];
+      let cardCount = 0;
+      const maxCards = 3;
+
+      // Crear tooltip container
+      const tooltip = document.createElement('div');
+      tooltip.className = 'preview-tooltip';
+      document.body.appendChild(tooltip);
+
+      function createDetectionCard(data) {
+        const card = document.createElement('div');
+        card.className = 'detection-card';
+        card.style.top = `${120 + (cardCount * 80)}px`; // Posición escalonada
+        card.innerHTML = `
+          <button class="close-btn" aria-label="Cerrar">×</button>
+          <img src="/imagen/${data.id}" class="card-img" alt="Detección">
+          <div class="card-body">
+            <h6 class="mb-2">${data.insecto}</h6>
+            <small class="text-muted d-block">📅 ${data.fecha}</small>
+            <small class="text-muted d-block">🌡️ ${data.temp}°C | 💧 ${data.hum}%</small>
+          </div>
+        `;
+
+        // Evento para cerrar la card
+        card.querySelector('.close-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          card.remove();
+          reorganizeCards();
+        });
+
+        // Abrir modal al hacer click en la card
+        card.addEventListener('click', () => {
+          document.getElementById('modalImage').src = `/imagen/${data.id}`;
+          document.getElementById('modalFecha').textContent = data.fecha;
+          document.getElementById('modalCamara').textContent = data.camara;
+          document.getElementById('modalInsecto').textContent = data.insecto;
+          document.getElementById('modalTemp').textContent = data.temp + '°C';
+          document.getElementById('modalHumedad').textContent = data.hum + '%';
+          document.getElementById('modalTelegram').textContent = data.telegram;
+          previewModal.show();
+        });
+
+        return card;
+      }
+
+      function reorganizeCards() {
+        const cards = document.querySelectorAll('.detection-card');
+        cards.forEach((card, index) => {
+          card.style.top = `${120 + (index * 80)}px`;
+        });
+        cardCount = cards.length;
+      }
+
+      // Gestionar hover en las filas
+      document.querySelectorAll('.preview-row').forEach(row => {
+        row.addEventListener('mouseenter', (e) => {
+          const rect = row.getBoundingClientRect();
+          tooltip.innerHTML = `
+            <img src="/imagen/${row.dataset.id}" alt="Vista previa">
+            <div>
+              <strong>${row.dataset.insecto}</strong>
+              <small class="text-muted d-block">📅 ${row.dataset.fecha}</small>
+              <small class="text-muted d-block">🌡️ ${row.dataset.temp}°C | 💧 ${row.dataset.hum}%</small>
+            </div>
+          `;
+          tooltip.style.display = 'block';
+          tooltip.style.left = `${rect.right + 10}px`;
+          tooltip.style.top = `${rect.top}px`;
+        });
+
+        row.addEventListener('mouseleave', () => {
+          tooltip.style.display = 'none';
+        });
+
+        // Click en la fila para crear card
+        row.addEventListener('click', function() {
+          const data = {
+            id: this.dataset.id,
+            fecha: this.dataset.fecha,
+            camara: this.dataset.camara,
+            insecto: this.dataset.insecto,
+            temp: this.dataset.temp,
+            hum: this.dataset.hum,
+            telegram: this.dataset.telegram
+          };
+
+          // Limitar número de cards activas
+          if (cardCount >= maxCards) {
+            const oldestCard = document.querySelector('.detection-card');
+            if (oldestCard) oldestCard.remove();
+            cardCount--;
+          }
+
+          const card = createDetectionCard(data);
+          document.body.appendChild(card);
+          cardCount++;
+        });
+      });
+    });
+  </script>
 </body>
 </html>

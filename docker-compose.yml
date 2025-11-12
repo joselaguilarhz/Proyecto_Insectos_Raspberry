@@ -5,7 +5,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    env_file:
+      - .env 
     container_name: smart-fenix-app
+    user: "0:0"
     restart: unless-stopped
     ports:
       - "8000:8000"

@@ -1,45 +1,141 @@
 {% extends "layout.html" %}
 {% block content %}
-<h1 class="mb-4">Detecciones</h1>
+<h1 class="mb-4">
+  <i class="bi bi-camera-fill text-primary"></i> Panel de detecciones
+</h1>
 
-<form class="card card-body shadow-sm mb-3" method="get">
-  <div class="row g-2 align-items-end">
-    <div class="col-12 col-md-3">
-      <label class="form-label">Insecto</label>
-      <select name="insecto" class="form-select">
-        <option value="">(Todos)</option>
-        {% for i in insectos %}
-          <option value="{{ i }}" {% if filtros.insecto==i %}selected{% endif %}>{{ i }}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <div class="col-12 col-md-3">
-      <label class="form-label">Cámara</label>
-      <select name="cam" class="form-select">
-        <option value="">(Todas)</option>
-        {% for c in cams %}
-          <option value="{{ c }}" {% if filtros.cam==c %}selected{% endif %}>{{ c }}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <div class="col-6 col-md-2">
-      <label class="form-label">Desde</label>
-      <input type="date" name="desde" class="form-control" value="{{ filtros.desde }}">
-    </div>
-    <div class="col-6 col-md-2">
-      <label class="form-label">Hasta</label>
-      <input type="date" name="hasta" class="form-control" value="{{ filtros.hasta }}">
-    </div>
-    <div class="col-6 col-md-1 form-check mt-4">
-      <input class="form-check-input" type="checkbox" id="solo" name="solo" value="1" {% if filtros.solo %}checked{% endif %}>
-      <label class="form-check-label" for="solo">Sólo con insecto</label>
-    </div>
-    <div class="col-6 col-md-1">
-      <button class="btn btn-primary w-100">Filtrar</button>
+<!-- === CTA DESPLEGABLES (Filtros y Frecuencia) === -->
+<div class="d-flex flex-wrap gap-2 mb-3">
+  <button class="btn btn-toggle-sf" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFiltros" aria-expanded="false" aria-controls="collapseFiltros">
+    <i class="bi bi-funnel-fill me-2"></i> Filtros
+  </button>
+  <button class="btn btn-toggle-sf" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFrecuencia" aria-expanded="false" aria-controls="collapseFrecuencia">
+    <i class="bi bi-bar-chart-fill me-2"></i> Frecuencia
+  </button>
+</div>
+
+<!-- === CARDS DE ESTADÍSTICAS (clickables) === -->
+<div class="row g-3 mb-4">
+  <div class="col-md-4 col-sm-6">
+    <div class="card stat-card bg-gradient-blue text-white stat-trigger" data-metric="temperature" role="button" tabindex="0">
+      <div class="card-body d-flex align-items-center">
+        <div class="bg-white bg-opacity-25 rounded-circle p-3 me-3 stat-icon">
+          <i class="bi bi-thermometer-half fs-3"></i>
+        </div>
+        <div>
+          <p class="mb-1 small fw-semibold text-white-50">Temperatura actual</p>
+          <h3 class="fw-bold">{{ temp_actual|default('--') }}°C</h3>
+        </div>
+      </div>
     </div>
   </div>
-</form>
 
+  <div class="col-md-4 col-sm-6">
+    <div class="card stat-card bg-gradient-green text-white stat-trigger" data-metric="humidity" role="button" tabindex="0">
+      <div class="card-body d-flex align-items-center">
+        <div class="bg-white bg-opacity-25 rounded-circle p-3 me-3 stat-icon">
+          <i class="bi bi-droplet-fill fs-3"></i>
+        </div>
+        <div>
+          <p class="mb-1 small fw-semibold text-white-50">Humedad actual</p>
+          <h3 class="fw-bold">{{ hum_actual|default('--') }}%</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4 col-sm-6">
+    <div class="card stat-card bg-gradient-orange text-white stat-trigger" data-metric="detections" role="button" tabindex="0">
+      <div class="card-body d-flex align-items-center">
+        <div class="bg-white bg-opacity-25 rounded-circle p-3 me-3 stat-icon">
+          <i class="bi bi-bug-fill fs-3"></i>
+        </div>
+        <div>
+          <p class="mb-1 small fw-semibold text-white-50">Detecciones hoy</p>
+          <h3 class="fw-bold">{{ total_hoy }}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- === FRECUENCIA (OCULTA EN DESPLEGABLE) === -->
+<div class="collapse" id="collapseFrecuencia">
+  <div class="card shadow-sm mb-4 collapse-container">
+    <div class="card-header bg-primary text-white">
+      <i class="bi bi-bar-chart-fill me-2"></i> Frecuencia de detecciones
+    </div>
+    <div class="card-body p-0">
+      <table class="table mb-0 align-middle">
+        <thead class="table-light">
+          <tr>
+            <th><i class="bi bi-bug me-1"></i> Insecto</th>
+            <th class="text-end"><i class="bi bi-hash me-1"></i> Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if conteo %}
+            {% for insecto, total in conteo %}
+            <tr>
+              <td>
+                <span class="badge bg-primary bg-opacity-10 text-dark px-3 py-2">{{ insecto }}</span>
+              </td>
+              <td class="text-end"><strong class="text-primary">{{ total }}</strong></td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr><td colspan="2" class="text-center text-muted py-3">Sin datos disponibles</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- === FILTROS (OCULTOS EN DESPLEGABLE) === -->
+<div class="collapse" id="collapseFiltros">
+  <form class="card card-body shadow-sm mb-4 collapse-container" method="get">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-3">
+        <label class="form-label"><i class="bi bi-bug me-1"></i> Insecto</label>
+        <select name="insecto" class="form-select">
+          <option value="">(Todos)</option>
+          {% for i in insectos %}
+            <option value="{{ i }}" {% if filtros.insecto==i %}selected{% endif %}>{{ i }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label"><i class="bi bi-camera me-1"></i> Cámara</label>
+        <select name="cam" class="form-select">
+          <option value="">(Todas)</option>
+          {% for c in cams %}
+            <option value="{{ c }}" {% if filtros.cam==c %}selected{% endif %}>{{ c }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label"><i class="bi bi-calendar-check me-1"></i> Desde</label>
+        <input type="date" name="desde" class="form-control" value="{{ filtros.desde }}">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label"><i class="bi bi-calendar-x me-1"></i> Hasta</label>
+        <input type="date" name="hasta" class="form-control" value="{{ filtros.hasta }}">
+      </div>
+      <div class="col-md-1 text-center">
+        <div class="form-check mt-3">
+          <input class="form-check-input" type="checkbox" id="solo" name="solo" value="1" {% if filtros.solo %}checked{% endif %}>
+          <label class="form-check-label small" for="solo">Sólo con insecto</label>
+        </div>
+      </div>
+      <div class="col-md-1">
+        <button class="btn btn-primary w-100"><i class="bi bi-funnel-fill me-1"></i> Filtrar</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- === TABLA DE DETECCIONES === -->
 <div class="table-responsive shadow-sm">
   <table class="table align-middle mb-0">
     <thead class="table-light">
@@ -47,54 +143,396 @@
         <th>Fecha</th>
         <th>Cámara</th>
         <th>Insecto</th>
-        <th>Archivo</th>
-        <th>Imagen</th>
-        <th>Telegram</th>
+        <th class="text-center">Imagen</th>
+        <th class="text-center">Temp</th>
+        <th class="text-center">Humedad</th>
       </tr>
     </thead>
     <tbody>
       {% for d in items %}
-      <tr>
-        <td class="small">{{ d.fecha }}</td>
-        <td class="small">{{ d.user.camera_name if d.user else "" }}</td>
-        <td class="fw-semibold">{{ d.insecto_detectado }}</td>
-        <td class="small">{{ d.nombre_archivo }}</td>
-        <td style="width:110px">
-          <a href="{{ url_for('imagen_by_id', det_id=d.id) }}" target="_blank">
-            <img src="{{ url_for('imagen_by_id', det_id=d.id) }}" class="img-thumbnail" style="max-width:100px">
+      <tr class="preview-row" style="cursor:pointer"
+          data-id="{{ d.id }}"
+          data-fecha="{{ d.fecha }}"
+          data-camara="{{ d.user.camera_name }}"
+          data-insecto="{{ d.insecto_detectado }}"
+          data-temp="{{ d.temperature }}"
+          data-hum="{{ d.humidity }}"
+          data-processed="{{ d.processed_filename }}">
+        <td><small>{{ d.fecha }}</small></td>
+        <td><span class="badge bg-secondary bg-opacity-10 text-dark">{{ d.user.camera_name }}</span></td>
+        <td><span class="badge bg-primary bg-opacity-75 px-3 py-2">{{ d.insecto_detectado }}</span></td>
+        <td class="text-center" style="width:110px">
+          {% if d.nombre_archivo %}
+          <a href="{{ url_for('main_bp.imagen_by_id', det_id=d.id) }}" target="_blank" aria-label="Abrir imagen en nueva pestaña">
+            {% if d.processed_filename %}
+            <img src="{{ url_for('main_bp.imagenes', filename=d.processed_filename) }}" class="img-thumbnail" style="max-width:100px" alt="Miniatura procesada">
+            {% else %}
+            <img src="{{ url_for('main_bp.imagen_by_id', det_id=d.id) }}" class="img-thumbnail" style="max-width:100px" alt="Miniatura">
+            {% endif %}
           </a>
+          {% else %}<span class="text-muted small">Sin imagen</span>{% endif %}
         </td>
-        <td>
-          {% if d.enviado_telegram %}
-            <span class="badge text-bg-success">Enviado</span>
-          {% else %}
-            <span class="badge text-bg-secondary">No</span>
-          {% endif %}
-        </td>
+        <td class="text-center">{{ d.temperature|default('--') }}°C</td>
+        <td class="text-center">{{ d.humidity|default('--') }}%</td>
       </tr>
       {% endfor %}
       {% if not items %}
-      <tr><td colspan="6" class="text-center text-muted py-4">Sin resultados</td></tr>
+      <tr><td colspan="6" class="text-center text-muted py-5">No se encontraron resultados</td></tr>
       {% endif %}
     </tbody>
   </table>
 </div>
 
+<!-- === PAGINACIÓN === -->
 {% set last_page = (total // per_page) + (1 if (total % per_page) else 0) %}
-<nav class="mt-3">
+<nav class="mt-4">
   <ul class="pagination justify-content-center">
-    {% set q = request.args.to_dict() %}
-    {% set q_prev = q.copy() %}
-    {% set q_next = q.copy() %}
-    {% set q_prev = q_prev.update({'page': page-1}) %}
-    {% set q_next = q_next.update({'page': page+1}) %}
-    <li class="page-item {% if page<=1 %}disabled{% endif %}">
-      <a class="page-link" href="{{ url_for('detecciones', **request.args.to_dict(), page=page-1) }}">«</a>
+    <li class="page-item {% if page <= 1 %}disabled{% endif %}">
+      <a class="page-link" href="{{ url_for('main_bp.detecciones', page=page-1) }}">
+        <i class="bi bi-chevron-left"></i> Anterior
+      </a>
     </li>
-    <li class="page-item disabled"><span class="page-link">Página {{ page }} / {{ last_page if last_page else 1 }}</span></li>
-    <li class="page-item {% if page>=last_page %}disabled{% endif %}">
-      <a class="page-link" href="{{ url_for('detecciones', **request.args.to_dict(), page=page+1) }}">»</a>
+
+    <li class="page-item disabled">
+      <span class="page-link bg-primary text-white">
+        Página {{ page }} / {{ last_page if last_page else 1 }}
+      </span>
+    </li>
+
+    <li class="page-item {% if page >= last_page %}disabled{% endif %}">
+      <a class="page-link" href="{{ url_for('main_bp.detecciones', page=page+1) }}">
+        Siguiente <i class="bi bi-chevron-right"></i>
+      </a>
     </li>
   </ul>
 </nav>
+
+<!-- Modal de vista previa (con toggle de imágenes) -->
+<div class="modal fade" id="previewModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-info-circle-fill text-primary me-2"></i>
+          Detalles de la detección
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="position-relative">
+              <img id="modalImage" src="" class="img-fluid rounded" alt="Imagen detección">
+              <div id="imageToggle" class="btn-group position-absolute top-0 end-0 m-2 shadow-sm" role="group" style="display:none;">
+                <button type="button" class="btn btn-sm btn-light" id="btnOriginal">
+                  <i class="bi bi-image"></i> Original
+                </button>
+                <button type="button" class="btn btn-sm btn-primary active" id="btnProcessed">
+                  <i class="bi bi-bounding-box"></i> Procesada
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <dl class="row mb-0">
+              <dt class="col-sm-4">Fecha</dt>
+              <dd class="col-sm-8" id="modalFecha"></dd>
+
+              <dt class="col-sm-4">Cámara</dt>
+              <dd class="col-sm-8" id="modalCamara"></dd>
+
+              <dt class="col-sm-4">Insecto</dt>
+              <dd class="col-sm-8" id="modalInsecto"></dd>
+
+              <dt class="col-sm-4">Temperatura</dt>
+              <dd class="col-sm-8" id="modalTemp"></dd>
+
+              <dt class="col-sm-4">Humedad</dt>
+              <dd class="col-sm-8" id="modalHumedad"></dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de gráfico (Plotly) -->
+<div class="modal fade" id="chartModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-graph-up-arrow text-primary me-2"></i>
+          Histórico: <span id="chartMetricLabel">—</span>
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <form id="chartControls" class="row g-3 align-items-end mb-3">
+          <input type="hidden" id="chartMetric" value="temperature">
+          <div class="col-sm-12 col-md-3">
+            <label class="form-label">Desde</label>
+            <input type="date" id="chartDesde" class="form-control">
+          </div>
+          <div class="col-sm-12 col-md-3">
+            <label class="form-label">Hasta</label>
+            <input type="date" id="chartHasta" class="form-control">
+          </div>
+          <div class="col-sm-12 col-md-3">
+            <div class="form-check mt-4">
+              <input class="form-check-input" type="checkbox" id="chartMarkers" checked>
+              <label class="form-check-label" for="chartMarkers">Mostrar puntos</label>
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-3 text-md-end">
+            <div class="btn-group w-100 w-md-auto" role="group" aria-label="Presets">
+              <button class="btn btn-outline-primary btn-range" data-range="24h" type="button">24h</button>
+              <button class="btn btn-outline-primary btn-range" data-range="72h" type="button">72h</button>
+              <button class="btn btn-outline-primary btn-range" data-range="7d" type="button">7 días</button>
+              <button class="btn btn-outline-primary btn-range" data-range="30d" type="button">30 días</button>
+            </div>
+          </div>
+        </form>
+
+        <div id="chartAlert" class="alert d-none"></div>
+        <div id="chartLoader" class="text-center py-4 d-none">
+          <div class="spinner-border text-primary" role="status" aria-hidden="true"></div>
+          <div class="mt-2 small text-muted">Cargando datos…</div>
+        </div>
+        <div id="chartContainer" style="width:100%;height:480px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Plotly -->
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+
+<script>
+(function(){
+  // ========= Utilidades de fechas =========
+  function formatDateInput(d){
+    const pad = n => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  }
+  function addDays(d, days){ const nd = new Date(d); nd.setDate(nd.getDate()+days); return nd; }
+
+  // ========= Endpoints para series =========
+  const SERIES_API = "/api/series";
+
+  // ========= Estado del gráfico =========
+  const chartMetricEl = document.getElementById('chartMetric');
+  const chartMetricLabelEl = document.getElementById('chartMetricLabel');
+  const desdeEl = document.getElementById('chartDesde');
+  const hastaEl = document.getElementById('chartHasta');
+  const markersEl = document.getElementById('chartMarkers');
+  const alertEl = document.getElementById('chartAlert');
+  const loaderEl = document.getElementById('chartLoader');
+  const containerEl = document.getElementById('chartContainer');
+
+  // Presets iniciales: últimos 7 días
+  const today = new Date();
+  hastaEl.value = formatDateInput(today);
+  desdeEl.value = formatDateInput(addDays(today, -7));
+
+  // ========= Abrir modal desde cards =========
+  document.querySelectorAll('.stat-trigger').forEach(card => {
+    card.addEventListener('click', () => {
+      const metric = card.getAttribute('data-metric') || 'temperature';
+      openChart(metric);
+    });
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        const metric = card.getAttribute('data-metric') || 'temperature';
+        openChart(metric);
+      }
+    });
+  });
+
+  function openChart(metric){
+    chartMetricEl.value = metric;
+    chartMetricLabelEl.textContent = metric === 'temperature' ? 'Temperatura (°C)'
+      : metric === 'humidity' ? 'Humedad (%)'
+      : 'Detecciones (#)';
+
+    const chartModal = new bootstrap.Modal(document.getElementById('chartModal'));
+    chartModal.show();
+    fetchAndPlot();
+  }
+
+  // ========= Controles =========
+  document.querySelectorAll('.btn-range').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const range = btn.getAttribute('data-range');
+      const end = new Date();
+      let start = new Date(end);
+      if (range === '24h') { start = addDays(end, -1); }
+      else if (range === '72h') { start = addDays(end, -3); }
+      else if (range === '7d') { start = addDays(end, -7); }
+      else if (range === '30d') { start = addDays(end, -30); }
+      desdeEl.value = formatDateInput(start);
+      hastaEl.value = formatDateInput(end);
+      fetchAndPlot();
+    });
+  });
+
+  [desdeEl, hastaEl, markersEl].forEach(el => {
+    el.addEventListener('change', fetchAndPlot);
+  });
+
+  // ========= Fetch & Plot =========
+  async function fetchAndPlot(){
+    const metric = chartMetricEl.value;
+    const desde = desdeEl.value;
+    const hasta = hastaEl.value;
+    if (!desde || !hasta) return;
+
+    showLoader(true);
+    showAlert(null);
+
+    try {
+      const url = new URL(SERIES_API, window.location.origin);
+      url.searchParams.set('metric', metric);
+      url.searchParams.set('desde', desde);
+      url.searchParams.set('hasta', hasta);
+
+      const resp = await fetch(url, { headers: { 'Accept': 'application/json' }});
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const data = await resp.json();
+      const series = Array.isArray(data.series) ? data.series : [];
+
+      if (!series.length){
+        plotEmpty(`Sin datos para el rango seleccionado (${desde} → ${hasta}).`);
+        return;
+      }
+
+      const x = series.map(p => new Date(p.t));
+      const y = series.map(p => Number(p.v));
+
+      const trace = {
+        x, y,
+        type: 'scatter',
+        mode: markersEl.checked ? 'lines+markers' : 'lines',
+        name: metric,
+        hovertemplate: '%{x|%Y-%m-%d %H:%M}<br><b>%{y}</b><extra></extra>'
+      };
+
+      const layout = {
+        margin: { l: 60, r: 20, t: 20, b: 50 },
+        xaxis: { title: 'Fecha', showgrid: true },
+        yaxis: {
+          title: metric === 'temperature' ? '°C' : (metric === 'humidity' ? '%' : 'Detecciones'),
+          showgrid: true,
+          rangemode: 'tozero'
+        },
+        uirevision: true,
+        hovermode: 'x unified'
+      };
+
+      Plotly.newPlot(containerEl, [trace], layout, { responsive: true, displaylogo: false });
+    } catch (err){
+      plotEmpty('No se pudo cargar el histórico. Ajusta el rango o inténtalo de nuevo.');
+      showAlert('error', `Error al cargar datos (${err.message}).`);
+    } finally {
+      showLoader(false);
+    }
+  }
+
+  function plotEmpty(msg){
+    Plotly.newPlot(containerEl, [{
+      x: [], y: [],
+      type: 'scatter',
+      mode: 'lines'
+    }], {
+      margin: { l: 60, r: 20, t: 20, b: 50 },
+      annotations: [{
+        text: msg,
+        xref: 'paper', yref: 'paper',
+        x: 0.5, y: 0.5, showarrow: false,
+        font: { size: 14, color: '#6c757d' }
+      }]
+    }, { responsive: true, displaylogo: false });
+  }
+
+  function showLoader(v){ loaderEl.classList.toggle('d-none', !v); }
+  function showAlert(type, text){
+    if (!type || !text){ alertEl.classList.add('d-none'); return; }
+    alertEl.classList.remove('d-none');
+    alertEl.classList.toggle('alert-danger', type === 'error');
+    alertEl.classList.toggle('alert-success', type === 'success');
+    alertEl.textContent = text;
+  }
+
+  // ========= Vista previa modal con toggle de imágenes =========
+  let currentDetId = null;
+  let currentProcessedFilename = null;
+
+  document.querySelectorAll('.preview-row').forEach(row => {
+    row.addEventListener('click', () => {
+      const id = row.getAttribute('data-id');
+      const fecha = row.getAttribute('data-fecha');
+      const cam = row.getAttribute('data-camara');
+      const insecto = row.getAttribute('data-insecto');
+      const temp = row.getAttribute('data-temp');
+      const hum = row.getAttribute('data-hum');
+      const processedFilename = row.getAttribute('data-processed');
+
+      currentDetId = id;
+      currentProcessedFilename = processedFilename;
+
+      document.getElementById('modalFecha').textContent = fecha || '--';
+      document.getElementById('modalCamara').textContent = cam || '--';
+      document.getElementById('modalInsecto').textContent = insecto || '--';
+      document.getElementById('modalTemp').textContent = (temp && temp !== 'None') ? `${temp}°C` : '--';
+      document.getElementById('modalHumedad').textContent = (hum && hum !== 'None') ? `${hum}%` : '--';
+
+      // Mostrar imagen procesada por defecto si existe
+      const imageToggle = document.getElementById('imageToggle');
+      const modalImage = document.getElementById('modalImage');
+      
+      if (processedFilename && processedFilename !== 'None') {
+        imageToggle.style.display = 'block';
+        modalImage.src = `/imagenes/${processedFilename}`;
+        document.getElementById('btnProcessed').classList.add('active', 'btn-primary');
+        document.getElementById('btnProcessed').classList.remove('btn-light');
+        document.getElementById('btnOriginal').classList.add('btn-light');
+        document.getElementById('btnOriginal').classList.remove('active', 'btn-primary');
+      } else {
+        imageToggle.style.display = 'none';
+        const imgUrl = `{{ url_for('main_bp.imagen_by_id', det_id=0) }}`.replace('/0', `/${id}`);
+        modalImage.src = imgUrl;
+      }
+
+      const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
+      previewModal.show();
+    });
+  });
+
+  // Toggle entre imagen original y procesada
+  document.getElementById('btnOriginal').addEventListener('click', function() {
+    if (!currentDetId) return;
+    const imgUrl = `{{ url_for('main_bp.imagen_by_id', det_id=0) }}`.replace('/0', `/${currentDetId}`);
+    document.getElementById('modalImage').src = imgUrl;
+    
+    this.classList.add('active', 'btn-primary');
+    this.classList.remove('btn-light');
+    document.getElementById('btnProcessed').classList.add('btn-light');
+    document.getElementById('btnProcessed').classList.remove('active', 'btn-primary');
+  });
+
+  document.getElementById('btnProcessed').addEventListener('click', function() {
+    if (!currentProcessedFilename || currentProcessedFilename === 'None') return;
+    document.getElementById('modalImage').src = `/imagenes/${currentProcessedFilename}`;
+    
+    this.classList.add('active', 'btn-primary');
+    this.classList.remove('btn-light');
+    document.getElementById('btnOriginal').classList.add('btn-light');
+    document.getElementById('btnOriginal').classList.remove('active', 'btn-primary');
+  });
+
+})();
+</script>
+
 {% endblock %}
